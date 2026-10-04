@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mastering Musical en FL Studio – Manual paso a paso</title>
+<style>
+:root{--bg:#f6f7fb;--fg:#16181d;--mut:#5a6070;--card:#fff;--line:#d9dce5;--ac:#6d3df5;--ok:#12874a;--wa:#b36b00;--er:#c62828;--code:#eceefa}
+@media(prefers-color-scheme:dark){:root{--bg:#121212;--fg:#ececf1;--mut:#a3a8b8;--card:#1c1d24;--line:#33353f;--ac:#a58bff;--ok:#4cd488;--wa:#f0b24a;--er:#ff6b6b;--code:#262838}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 Arial,Helvetica,sans-serif;display:flex}
+nav{position:sticky;top:0;height:100vh;overflow:auto;width:260px;flex:none;padding:20px 16px;border-right:1px solid var(--line);background:var(--card)}
+nav b{display:block;margin-bottom:10px}
+nav a{display:block;color:var(--fg);text-decoration:none;padding:5px 8px;border-radius:6px;font-size:15px}
+nav a:hover{background:var(--code)}
+main{max-width:920px;padding:28px 5% 80px;flex:1;min-width:0}
+h1{font-size:2.2em;margin:.2em 0}
+h2{font-size:1.6em;margin:2.2em 0 .4em;padding-top:.6em;border-top:3px solid var(--ac)}
+h3{margin:1.6em 0 .4em}
+h4{margin:1.2em 0 .3em}
+.box{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--ac);border-radius:8px;padding:12px 16px;margin:14px 0}
+.box.ok{border-left-color:var(--ok)}.box.wa{border-left-color:var(--wa)}.box.er{border-left-color:var(--er)}
+.box>:first-child{margin-top:0}.box>:last-child{margin-bottom:0}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top;font-size:15px}
+th{background:var(--code)}
+details{background:var(--card);border:1px solid var(--line);border-radius:8px;margin:10px 0;padding:6px 14px}
+summary{cursor:pointer;font-weight:bold;padding:6px 0}
+code,.v{background:var(--code);padding:1px 6px;border-radius:4px;font-size:.92em}
+.chain{font-weight:bold;background:var(--code);padding:10px 14px;border-radius:8px}
+li{margin:3px 0}
+:focus-visible{outline:3px solid var(--ac)}
+@media(max-width:800px){body{display:block}nav{position:static;height:auto;width:auto;border:0;border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<nav>
+<b>Índice</b>
+<a href="#intro">0. Antes de empezar</a>
+<a href="#gain">1. Gain / Headroom</a>
+<a href="#medir">2. Medición (Peak, TP, LUFS)</a>
+<a href="#estereo">3. Estéreo y mono</a>
+<a href="#eqc">4. EQ correctiva</a>
+<a href="#comp">5. Compresión (glue)</a>
+<a href="#sat">6. Saturación</a>
+<a href="#eqt">7. EQ tonal final</a>
+<a href="#lim">8. Limitador final</a>
+<a href="#check">9. Comprobación final</a>
+<a href="#generos">10. Guía por género</a>
+<a href="#manual">11. Manual de plugins</a>
+<a href="#plugins">12. Plugins por etapa</a>
+<a href="#glosario">13. Glosario</a>
+<a href="#errores">14. Errores típicos</a>
+</nav>
+<main>
+<h1>Mastering Musical en FL Studio</h1>
+<p>Manual paso a paso para tener abierto mientras haces la mezcla final y el mastering. Cada paso explica qué hacer, con qué plugin, con qué valores, cómo comprobarlo y qué significa cada término técnico.</p>
+
+<h2 id="intro">0. Antes de empezar</h2>
+<h3>¿Qué es el mastering?</h3>
+<p>Es la última etapa: se trabaja sobre la mezcla ya terminada (stereo, el <b>Master</b>) para equilibrar tonalmente, controlar la dinámica, subir el volumen de forma competitiva y asegurar que suene bien en cualquier sistema (móvil, auriculares, club, streaming). <b>Si la mezcla tiene problemas graves (kick enterrado, lead que no se oye), se arregla en la mezcla, no en el mastering.</b></p>
+<div class="box wa"><b>Regla de oro:</b> el mastering son cambios <b>pequeños</b>: EQ de ±1–3 dB, compresión de 1–2 dB de reducción, limitador de 2–6 dB. Si necesitas mucho más, vuelve a la mezcla.</div>
+<h3>Cadena recomendada (orden)</h3>
+<p class="chain">Gain/Headroom → EQ correctiva → Compresor glue → Saturación (opcional) → EQ tonal → Imager/Mono bajos → Limitador → Medidores (Youlean)</p>
+<p>Los medidores (Youlean, SPAN) van <b>siempre al final</b> y no modifican el sonido. Puedes colocar un SPAN también al principio para ver el espectro.</p>
+<h3>Preparación</h3>
+<ul>
+<li><b>Escucha a volumen moderado y constante</b> (~70–80 dB SPL). Los oídos se fatigan: descansa cada 45–60 min.</li>
+<li><b>Compara con una referencia</b>: un tema profesional de tu género (WAV o MP3 alta calidad) en una pista aparte, igualando volumen (ver §8).</li>
+<li><b>Quita de la pista Master</b> cualquier limitador o clipper antes de empezar a medir.</li>
+<li><b>Exporta en WAV 24 bits</b> (o 32 float), 44.1 o 48 kHz, <b>sin dither</b> si es para otro mastering; con dither si pasas a 16 bits.</li>
+</ul>
+
+<h2 id="gain">1. Ajustar el nivel de entrada / Gain (headroom)</h2>
+<p><b>Headroom</b> = margen entre el pico más alto de la mezcla y 0 dBFS (el máximo digital). Lo necesitas para que EQ, compresión y saturación no provoquen <b>clipping</b> (recorte de la onda al superar 0 dBFS, que suena a distorsión).</p>
+<div class="box"><b>Objetivo:</b> picos de la mezcla entre <span class="v">-6 dB y -3 dB</span> (aceptable hasta -10 dB). <b>No hace falta que esté alta</b>: el volumen lo da el limitador al final.</div>
+<h3>Qué indica el medidor del Master (en el momento más fuerte, normalmente el drop)</h3>
+<div class="tw"><table>
+<tr><th>Pico</th><th>Estado</th><th>Acción</th></tr>
+<tr><td>0 dB o más</td><td>🔴 Riesgo de clipping</td><td>Bajar la mezcla</td></tr>
+<tr><td>-1 dB</td><td>🟡 Poco margen</td><td>Mejor bajar 3–5 dB</td></tr>
+<tr><td>-3 a -6 dB</td><td>🟢 Ideal</td><td>Seguir</td></tr>
+<tr><td>-12 dB o menos</td><td>🟢 Válido</td><td>Seguir (subirás con el limitador)</td></tr>
+</table></div>
+<h3>Cómo bajar la mezcla (si hace falta)</h3>
+<ol>
+<li>Abre el Mixer y comprueba que el Master no tiene limitador/clipper que falsee la medición.</li>
+<li>Selecciona <b>todas</b> las pistas/buses que van al Master (Ctrl+clic o clic con Shift).</li>
+<li>Bájalas <b>juntas</b> (mantiene las proporciones entre ellas).</li>
+<li>Reproduce el drop y mira el medidor. Repite hasta llegar a -6/-3 dB.</li>
+</ol>
+<div class="box er"><b>No bajes solo el fader del Master</b> si hay efectos en él: el nivel que entra a los plugins no cambiaría. Baja las pistas, o usa un plugin de ganancia (<b>Fruity Balance</b> → Volume, o <b>Fruity Limiter</b> → Gain) al principio de la cadena.</div>
+<p><b>Plugin útil:</b> <b>Fruity dB Meter</b> (nativo): muestra el nivel de pico en tiempo real.</p>
+
+<h2 id="medir">2. Medición: Peak, True Peak y LUFS</h2>
+<h3>Peak</h3>
+<p>Nivel máximo de las <b>muestras</b> digitales (dBFS = decibelios relativos a escala completa; 0 dBFS es el techo digital).</p>
+<h3>True Peak (dBTP)</h3>
+<p>Es el pico máximo real de la señal analógica reconstruida, que puede superar al pico de muestras porque entre dos muestras la onda puede subir más (<b>inter-sample peaks</b>). Al convertir a MP3/AAC/Spotify esto puede generar distorsión. Se mide con sobremuestreo (4x o más).</p>
+<div class="box"><b>Objetivo:</b> True Peak ≤ <span class="v">-1 dBTP</span> (para drops muy agresivos muchos usan -0.5 dBTP; evita 0.0).</div>
+<h3>LUFS (Loudness Units relative to Full Scale)</h3>
+<p>Mide el <b>volumen percibido</b>, ponderado por cómo oye el oído humano (filtro K-weighting). 1 LU = 1 dB. No es lo mismo que el pico: dos temas con -1 dB de pico pueden sonar muy distinto de fuertes.</p>
+<div class="tw"><table>
+<tr><th>Tipo</th><th>Alias</th><th>Ventana</th><th>Para qué sirve</th></tr>
+<tr><td>LUFS-I</td><td>Integrated</td><td>Toda la canción</td><td>Volumen global; es el que comparan las plataformas</td></tr>
+<tr><td>LUFS-S</td><td>Short-term</td><td>3 segundos</td><td>Ver cómo suenan drops y secciones</td></tr>
+<tr><td>LUFS-M</td><td>Momentary</td><td>400 ms</td><td>Reacción casi instantánea (kicks, golpes)</td></tr>
+</table></div>
+<p><b>LRA (Loudness Range):</b> diferencia entre secciones tranquilas y fuertes. En EDM suele ser baja (3–6 LU).<br><b>PLR (Peak to Loudness Ratio):</b> pico − LUFS-I. Valor bajo (≤8 dB) = muy comprimido; 9–12 dB = dinámico y con punch.</p>
+<h3>Plugin: Youlean Loudness Meter 2 (gratis)</h3>
+<ul>
+<li><b>Dónde:</b> último en el Master, <b>después del limitador</b>.</li>
+<li><b>Cómo usarlo:</b> pulsa Reset, reproduce <b>la canción entera</b> y lee LUFS-I y True Peak.</li>
+<li><b>Muestra:</b> Integrated, Short-term, Momentary, True Peak, LRA, PLR y un histograma.</li>
+</ul>
+<div class="box"><b>Nivel de premaster:</b> antes del limitador, la mezcla debería rondar los -18 a -16 LUFS-I. El objetivo final se mide <b>después</b> del limitador (ver §10).</div>
+<div class="box"><b>Streaming:</b> Spotify normaliza a ~-14 LUFS (modo normal), YouTube ~-14, Apple Music -16. Si tu tema está más fuerte, la plataforma lo <b>baja</b>; no ganas volumen, pierdes dinámica. Para club/DJ sí se masteriza más fuerte. Un buen compromiso en EDM: -9 a -7 LUFS-I.</div>
+
+<h2 id="estereo">3. Estéreo y mono en graves</h2>
+<p><b>Ancho estéreo:</b> diferencia entre canal izquierdo y derecho. <b>Mid</b> = lo que es igual en L y R (centro); <b>Side</b> = lo que es diferente (laterales). <b>Fase:</b> si L y R están invertidos entre sí, al sumarse a mono se <b>cancelan</b> (el sonido desaparece).</p>
+<p>Los graves deben ser <b>mono</b> porque: los sistemas de club suman a mono, los graves estéreo desperdician headroom y en vinilo/altavoces pequeños se cancelan.</p>
+<div class="tw"><table>
+<tr><th>Rango</th><th>Zona</th><th>Estéreo</th></tr>
+<tr><td>20–80 Hz</td><td>Subgrave / fundamental del bajo</td><td>🔴 Mono</td></tr>
+<tr><td>80–120 Hz</td><td>Bajo + cuerpo del kick</td><td>🟠 Muy centrado</td></tr>
+<tr><td>120–250 Hz</td><td>Graves / low-mids</td><td>🟠 Poco estéreo</td></tr>
+<tr><td>250 Hz–1 kHz</td><td>Medios bajos</td><td>🟡 Moderado</td></tr>
+<tr><td>1–5 kHz</td><td>Presencia, ataque</td><td>🟢 Estéreo</td></tr>
+<tr><td>5–10 kHz</td><td>Brillo</td><td>🟢 Amplio</td></tr>
+<tr><td>10–20 kHz</td><td>Aire</td><td>🟢 Muy amplio</td></tr>
+</table></div>
+<h3>Plugins</h3>
+<details open><summary>iZotope Ozone Imager 2 (gratis)</summary>
+<ul><li><b>Band 1 (graves):</b> activa <b>Stereoize/Width</b> en 0 y marca el crossover en <span class="v">100–120 Hz</span> con el ancho de la banda baja a <b>-100% (= mono)</b>.</li>
+<li><b>Width de bandas altas:</b> 0 a +20% (nunca extremo).</li>
+<li><b>Vectorscope:</b> muestra la imagen estéreo. Una línea vertical = mono; nube ancha = estéreo. <b>Correlation:</b> debe estar cerca de +1; si baja a negativo hay problemas de fase.</li></ul></details>
+<details><summary>GMonoBass (gratis) / Fruity Stereo Shaper (nativo)</summary>
+<p><b>GMonoBass:</b> pone mono todo por debajo de la frecuencia elegida (<span class="v">100 Hz</span>). <b>Fruity Stereo Shaper:</b> trae <b>Phase offset</b> y separación L/R; úsalo con moderación.</p></details>
+<div class="box ok">Si tu sub ya está perfectamente centrado, no necesitas tocar nada. El objetivo es corregir problemas, no aplicar mono porque sí. Comprueba con el botón <b>Mono</b> (Ozone Imager o Mixer) que no desaparece ningún elemento.</div>
+
+<h2 id="eqc">4. EQ correctiva</h2>
+<p>Objetivo: <b>eliminar o controlar lo que estorba</b> para obtener un espectro equilibrado. <b>EQ sustractiva</b> = quitar dB; <b>aditiva</b> = añadir dB (úsala con cuidado; cortar suele sonar más natural).</p>
+<h3>Plugin: Fruity Parametric EQ 2 (nativo)</h3>
+<ul>
+<li><b>7 bandas</b>; cada una tiene <b>Freq</b> (frecuencia central), <b>Gain</b> (dB subido/bajado), <b>BW/Q</b> (ancho de banda: valor alto de Q = estrecho, bajo = ancho).</li>
+<li><b>Band Solo:</b> escucha solo la zona de esa banda; ayuda a localizar problemas.</li>
+<li><b>Tipos de banda:</b> Low shelf, Peaking (bell), High shelf, High-pass/Low-pass (según versión).</li>
+<li>Alternativa gratis y superior para ver el resultado: <b>SPAN (Voxengo)</b> para el analizador, y <b>TDR Nova</b> para EQ dinámica.</li>
+</ul>
+<h3>Técnica boost + sweep (para encontrar problemas)</h3>
+<ol>
+<li>Pon una banda Peaking/Bell y súbela <b>+6 a +10 dB</b> con Q estrecho.</li>
+<li>Mueve la frecuencia lentamente. Cuando algo suene horrible, para.</li>
+<li>Baja esa banda a <b>-1 / -3 dB</b> y ensancha un poco el Q.</li>
+<li>Activa/desactiva (bypass) y compara a igual volumen. Si mejora, has acertado.</li>
+</ol>
+<h3>Problemas habituales</h3>
+<div class="tw"><table>
+<tr><th>Síntoma</th><th>Barrido</th><th>Solución</th><th>Comprobación</th></tr>
+<tr><td>BOOM / retumba</td><td>40→150 Hz</td><td>-1 a -3 dB, Q ancho</td><td>Kick/bass con fuerza pero sin retumbar</td></tr>
+<tr><td>Embarrada (mud)</td><td>150→500 Hz</td><td>-1 a -3 dB, Q ancho</td><td>Distingo piano, synths y bajo</td></tr>
+<tr><td>Congestionada (masking)</td><td>Mute por elementos</td><td>-2 a -4 dB en el que estorba (ver abajo)</td><td>Bypass A/B</td></tr>
+<tr><td>Caja / boxy</td><td>150→600 Hz (sobre todo 250–500)</td><td>-1 a -3 dB</td><td>Sonido más abierto</td></tr>
+<tr><td>Nasal / bocina</td><td>500 Hz→1.5 kHz</td><td>-1 a -3 dB</td><td>Desaparece el “HOOONK”</td></tr>
+<tr><td>Agresiva / pincha</td><td>2→5 kHz</td><td>-1 a -2 dB</td><td>Ya no pincha</td></tr>
+<tr><td>Agudos cansan</td><td>5→10 kHz</td><td>-1 a -2 dB (suele estar en 7–8 kHz)</td><td>Brillante pero agradable</td></tr>
+<tr><td>Pitido concreto (resonancia)</td><td>Q muy estrecho, barrer</td><td>-2 a -4 dB, Q alto (notch suave)</td><td>Apenas se escucha</td></tr>
+<tr><td>Apagada</td><td>No hacer sweep</td><td>+1 dB shelf desde 8–12 kHz</td><td>Brilla más</td></tr>
+<tr><td>Delgada</td><td>100–300 Hz</td><td>+1 a +3 dB (cuidado con el barro)</td><td>Más cuerpo</td></tr>
+<tr><td>Kick y bajo se pelean</td><td>40–120 Hz</td><td>-2 dB en el bajo donde pega el kick + sidechain</td><td>Kick definido</td></tr>
+<tr><td>Lead no se entiende</td><td>1–5 kHz</td><td>Primero baja los demás; recorta -1/-2 dB a piano/pad en esa zona antes de subir el lead</td><td>Lead presente</td></tr>
+</table></div>
+<div class="box wa"><b>Masking (enmascaramiento):</b> dos sonidos ocupan las mismas frecuencias y uno tapa al otro. <b>Detección:</b> mute uno a uno (piano, pad, lead, kick, sub, Reese, 808…); si al silenciar uno “todo respira”, ese contribuye al problema. Vuelve a activarlo y corrígelo en su pista. Corregir en la pista es mejor que en el Master.</div>
+<h3>Zonas del espectro</h3>
+<div class="tw"><table>
+<tr><th>Rango</th><th>Nombre</th><th>Qué contiene / qué vigilar</th></tr>
+<tr><td>20–40 Hz</td><td>Subgrave profundo</td><td>Energía casi inaudible que gasta headroom. High-pass a 20–25 Hz.</td></tr>
+<tr><td>40–80 Hz</td><td>Sub / peso</td><td>Sub, fundamental del kick. Cuidado con kick vs. bajo.</td></tr>
+<tr><td>80–120 Hz</td><td>Golpe y cuerpo</td><td>Punch del kick, cuerpo del bajo.</td></tr>
+<tr><td>120–250 Hz</td><td>Cuerpo / warmth</td><td>Calidez; aquí empieza el barro.</td></tr>
+<tr><td>250–500 Hz</td><td>Mud / boxiness</td><td>Barro y sensación de caja.</td></tr>
+<tr><td>500 Hz–1 kHz</td><td>Medios</td><td>Cuerpo del tema; los instrumentos se pelean.</td></tr>
+<tr><td>1–2 kHz</td><td>Presencia / inteligibilidad</td><td>Poco = lejano; mucho = agresivo.</td></tr>
+<tr><td>2–5 kHz</td><td>Ataque / claridad</td><td>Click del kick, snap del snare, lead.</td></tr>
+<tr><td>5–8 kHz</td><td>Agresividad / sibilancia</td><td>Hats, snares. Fatiga auditiva.</td></tr>
+<tr><td>8–12 kHz</td><td>Brillo / air / shimmer</td><td>Revisa <b>hiss</b> (siseo tipo “sss”) y <b>harshness</b> (aspereza que fatiga).</td></tr>
+<tr><td>12–20 kHz</td><td>Aire</td><td>Apertura; poca energía necesaria.</td></tr>
+</table></div>
+<h3>Tipos de filtro y la Q (todo sobre las curvas de EQ)</h3>
+<div class="box wa"><b>Aclaración:</b> la <b>Q</b> no es un tipo de filtro: es el <b>ancho</b> de la zona que afecta una banda. Los <b>tipos</b> son la forma de la curva. Son dos ajustes distintos que se combinan.</div>
+<h4>A) Tipos de filtro (la forma)</h4>
+<div class="tw"><table>
+<tr><th>Tipo</th><th>Qué hace</th><th>Cuándo usarlo</th></tr>
+<tr><td>High-pass (HPF / paso alto)</td><td>Corta por debajo de una frecuencia y deja pasar lo agudo</td><td>Limpiar graves inútiles: master 20–25 Hz; hats 300–600 Hz; voz 70–120 Hz; pad/lead 100–200 Hz; FX 100–500 Hz</td></tr>
+<tr><td>Low-pass (LPF / paso bajo)</td><td>Corta por encima de una frecuencia y deja pasar lo grave</td><td>Oscurecer pads y FX, quitar siseo, efectos de “filtro” en transiciones</td></tr>
+<tr><td>Band-pass</td><td>Deja pasar solo una zona; corta arriba y abajo</td><td>Aislar una banda para sidechain, saturar solo una zona, efectos de teléfono/radio</td></tr>
+<tr><td>Bell / Peaking (campana)</td><td>Sube o baja una zona con forma de campana</td><td>Correcciones de problemas concretos y realces tonales</td></tr>
+<tr><td>Wide cut / wide boost</td><td>Bell con Q muy bajo, que afecta a una zona enorme</td><td>Ajustes tonales naturales en el Master</td></tr>
+<tr><td>Notch</td><td>Corte muy estrecho y profundo</td><td>Eliminar un pitido o resonancia exacta</td></tr>
+<tr><td>Low shelf (estantería grave)</td><td>Sube o baja todo lo que está por debajo de una frecuencia</td><td>Dar peso (+0.5/1 dB a 60–100 Hz) o quitar graves</td></tr>
+<tr><td>High shelf (estantería aguda)</td><td>Sube o baja todo lo que está por encima de una frecuencia</td><td>Aire (+0.5/1 dB desde 8–10 kHz) o suavizar agudos</td></tr>
+<tr><td>Tilt shelf</td><td>Inclina todo el espectro como una balanza: sube graves y baja agudos (o al revés) a la vez</td><td>Hacer la mezcla más cálida u oscura (±0.5/1 dB) de forma muy natural</td></tr>
+</table></div>
+<h4>B) La Q (el ancho)</h4>
+<ul>
+<li><b>Q alta (4–10+):</b> estrecha. Afecta a una zona muy pequeña. Es <b>quirúrgica</b>.</li>
+<li><b>Q baja (0.3–1):</b> ancha. Afecta a una zona grande. Es <b>musical</b> y natural.</li>
+<li><b>BW (bandwidth):</b> ancho de banda medido en octavas; es lo inverso de Q. BW grande = Q baja. En Fruity Parametric EQ 2 el control se llama BW, y funciona al revés que Q: más BW, más ancho.</li>
+</ul>
+<div class="tw"><table>
+<tr><th>Situación</th><th>Q recomendada</th><th>Ganancia</th></tr>
+<tr><td>Equilibrio tonal del Master</td><td>0.3–0.8 (muy ancha)</td><td>±0.5 a ±2 dB</td></tr>
+<tr><td>Barro / boxiness (150–500 Hz)</td><td>0.7–1.5</td><td>-1 a -3 dB</td></tr>
+<tr><td>Boom en graves (40–150 Hz)</td><td>1–2</td><td>-1 a -3 dB</td></tr>
+<tr><td>Zona agresiva (2–5 kHz)</td><td>1.5–3</td><td>-1 a -2 dB</td></tr>
+<tr><td>Resonancia concreta (pitido)</td><td>5–10</td><td>-2 a -4 dB</td></tr>
+<tr><td>Notch para eliminar un tono</td><td>10 o más</td><td>-6 dB o más</td></tr>
+<tr><td>Búsqueda con boost + sweep</td><td>3–6 (temporal)</td><td>+6 a +10 dB</td></tr>
+</table></div>
+<p><b>Regla:</b> más ganancia + más Q estrecha = más riesgo de sonido artificial. En mastering, prefiere Q baja y poca ganancia.</p>
+<p><b>Q constante vs. proporcional:</b> en algunos ecualizadores el ancho se estrecha o ensancha según la ganancia (<b>Q proporcional</b>); en otros se mantiene igual (<b>Q constante</b>). Si notas que al subir o bajar dB cambia el ancho, ese es el motivo. Comprueba con el analizador.</p>
+<h4>C) Pendiente (slope) de los filtros HPF/LPF</h4>
+<div class="tw"><table>
+<tr><th>Pendiente</th><th>Carácter</th><th>Uso</th></tr>
+<tr><td>6 dB/oct</td><td>Muy suave, casi no se nota</td><td>Aligerar sin cambiar el sonido</td></tr>
+<tr><td>12 dB/oct</td><td>Suave</td><td>Uso general en pads, leads, voces</td></tr>
+<tr><td>24 dB/oct</td><td>Marcada</td><td>Limpiar graves en hats y FX, HPF del Master (20–25 Hz con 12–24)</td></tr>
+<tr><td>48 dB/oct o más</td><td>Muy abrupta; puede resonar o sonar artificial en la frecuencia de corte</td><td>Cortes técnicos, quitar subgrave inútil en elementos concretos</td></tr>
+</table></div>
+<p><b>Octava:</b> doblar la frecuencia (100 → 200 Hz). “dB/oct” indica cuánto baja el volumen por cada octava que te alejas del corte.</p>
+<h4>D) Modos de fase</h4>
+<ul>
+<li><b>Fase mínima (por defecto en la mayoría de EQ):</b> cambia la fase alrededor de las bandas modificadas, y es lo habitual y natural. En cortes grandes puede alterar un poco el timbre de graves.</li>
+<li><b>Fase lineal:</b> no altera la fase, pero introduce <b>pre-ringing</b> (un pequeño “eco” antes del golpe) y más latencia. Útil en el Master con cortes suaves; evítalo en kicks y graves con transitorios fuertes.</li>
+<li><b>Fase natural / analógica:</b> término usado por algunos plugins para un punto intermedio.</li>
+<li><b>Latencia:</b> retraso de procesado. FL Studio la compensa, pero revisa el PDC al usar fase lineal.</li>
+</ul>
+<h4>E) EQ sustractiva vs. aditiva</h4>
+<ul><li><b>Sustractiva:</b> quitas dB (preferible, suena más natural).</li><li><b>Aditiva:</b> añades dB (úsala para realces suaves con Q baja).</li></ul>
+<h4>F) Ejemplos aplicados por género</h4>
+<div class="tw"><table>
+<tr><th>Caso</th><th>Ajuste</th></tr>
+<tr><td>Kick EDM (Avicii, Garrix)</td><td>Bell -2 dB a 250–400 Hz, Q 1.5 (quita caja); +1.5 dB a 3–5 kHz, Q 1 (click). HPF 25 Hz</td></tr>
+<tr><td>808 en trap / trap melódico</td><td>HPF 25–30 Hz; bell -2 dB a 150–250 Hz, Q 1; notch si hay una nota que sobresale; todo bajo 100 Hz en mono</td></tr>
+<tr><td>Bajo de house / afro house</td><td>Bell -2 dB a 80–120 Hz donde pega el kick, Q 1.5; +1 dB a 200 Hz con Q 0.7 para calidez</td></tr>
+<tr><td>Reese en drum &amp; bass</td><td>Low-pass suave por encima de 8–10 kHz; bell -2 dB a 200–300 Hz; sub aparte en mono</td></tr>
+<tr><td>Pads de progressive house</td><td>HPF 150–200 Hz, 12 dB/oct; bell -2 dB a 300–500 Hz; high shelf +1 dB a 10 kHz</td></tr>
+<tr><td>Hats / FX</td><td>HPF 300–600 Hz; bell -1 a -2 dB a 7–8 kHz si cansan</td></tr>
+<tr><td>Master (cualquier género)</td><td>HPF 20–25 Hz; shelfs de ±1 dB; bells con Q 0.5–1; nada que pase de ±3 dB</td></tr>
+</table></div>
+<h3>EQ dinámica</h3>
+<p>Una banda de EQ que solo actúa cuando el nivel de esa frecuencia supera un umbral. Útil en: kick→bajo, voz→synth, snare→lead, hi-hat agresivo, resonancias solo en ciertas partes del Master. Plugin gratis: <b>TDR Nova</b>.</p>
+<h3>Rangos típicos por elemento (EDM)</h3>
+<div class="tw"><table>
+<tr><th>Elemento</th><th>Zonas</th><th>Elemento</th><th>Zonas</th></tr>
+<tr><td>Sub</td><td>20–100 Hz</td><td>Hats</td><td>5–15 kHz</td></tr>
+<tr><td>Kick</td><td>40–120 Hz + 2–5 kHz</td><td>Lead</td><td>200 Hz–8 kHz</td></tr>
+<tr><td>Bass</td><td>50–250 Hz + armónicos</td><td>Pluck</td><td>200 Hz–10 kHz</td></tr>
+<tr><td>Snare</td><td>150–300 Hz + 1–5 kHz</td><td>Piano / Pad</td><td>100 Hz–10 kHz</td></tr>
+<tr><td>Clap</td><td>500 Hz–5 kHz</td><td>FX</td><td>Depende</td></tr>
+</table></div>
+
+<h2 id="comp">5. Compresión (glue)</h2>
+<p>Un <b>compresor</b> reduce la diferencia entre sonidos fuertes y suaves (<b>rango dinámico</b>). En el Master, a poca dosis, actúa de “pegamento” (<b>glue</b>): hace que el conjunto suene como un solo bloque.</p>
+<h3>Parámetros (qué es cada uno)</h3>
+<div class="tw"><table>
+<tr><th>Parámetro</th><th>Qué hace</th><th>Valor glue (Master EDM)</th></tr>
+<tr><td>Threshold</td><td>Nivel (dB) a partir del cual empieza a comprimir</td><td>Bajarlo hasta ver 1–2 dB de reducción</td></tr>
+<tr><td>Ratio</td><td>Cuánto reduce lo que pasa del umbral. 2:1 = por cada 2 dB sobre el umbral, sale 1 dB</td><td>1.5:1 – 2:1</td></tr>
+<tr><td>Attack</td><td>Tiempo que tarda en empezar a actuar. Lento deja pasar el transitorio (golpe del kick)</td><td>20–40 ms (menos de 5 ms aplasta el punch)</td></tr>
+<tr><td>Release</td><td>Tiempo en volver a no comprimir. Muy rápido = pumping; muy lento = ahogado</td><td>50–150 ms; ajusta al tempo</td></tr>
+<tr><td>Gain reduction (GR)</td><td>Cuánto baja el compresor</td><td>1–2 dB (4 dB o más = demasiado)</td></tr>
+<tr><td>Makeup gain</td><td>Compensa el volumen perdido</td><td>Igualar volumen con bypass</td></tr>
+<tr><td>Knee</td><td>Suavidad de entrada al umbral (hard/soft)</td><td>Soft para glue</td></tr>
+</table></div>
+<p><b>Transitorio:</b> el golpe inicial (ataque) de un sonido percusivo. <b>Pumping:</b> subida y bajada audible del volumen por la compresión.</p>
+<h3>Plugins</h3>
+<details open><summary>Fruity Limiter (modo compresor) — nativo</summary>
+<p>Se abre con dos secciones: <b>COMP</b> y <b>LIM</b>. Para compresor suave: <b>Threshold</b> en -6 a -10 dB (ajusta hasta 1–2 dB de reducción), <b>Ratio</b> 2:1, <b>Attack</b> 20–30 ms, <b>Release</b> 100 ms, <b>Knee</b> en medio, <b>Gain</b> 0. Pulsa <b>COMP</b> en la sección compresor.</p></details>
+<details><summary>Fruity Compressor — nativo</summary>
+<p><b>Threshold</b> -12 dB, <b>Ratio</b> 2:1, <b>Gain</b> compensa, <b>Attack</b> 20–30 ms, <b>Release</b> 100 ms. Tiene <b>Type</b> (Hard/Vintage) y <b>Smooth</b>.</p></details>
+<details><summary>Maximus — nativo, multibanda</summary>
+<p>Divide en 3 bandas (Low, Mid, High) y comprime cada una por separado. Útil para controlar graves sin tocar agudos. Úsalo con ratios 1.5–2:1 y 1–2 dB de reducción por banda. Si dudas, déjalo apagado.</p></details>
+<details><summary>TDR Kotelnikov (gratis)</summary>
+<p>Compresor de mastering muy transparente. Ratio 1.5–2, attack 20–30 ms, release 100–200 ms. Su modo <b>Peak/RMS</b> en RMS es ideal para glue.</p></details>
+<p><b>Compresión en buses:</b> aplica un compresor distinto a bus de Drums (para pegar kick+snare) y a bus de Synths.</p>
+<div class="box ok"><b>Objetivo:</b> mezcla más cohesionada y controlada, sin aplastar la dinámica. Compara con bypass a mismo volumen.</div>
+
+<h2 id="sat">6. Saturación (opcional)</h2>
+<p>La <b>saturación</b> añade <b>armónicos</b> (frecuencias múltiplos de la original) que dan densidad, calidez y percepción de volumen. Es una distorsión suave y controlada. No es obligatoria: si tu mezcla ya suena llena, sáltatela.</p>
+<h3>Fruity Blood Overdrive (nativo) — perilla por perilla</h3>
+<div class="tw"><table>
+<tr><th>Perilla</th><th>Qué hace</th><th>Valor recomendado</th></tr>
+<tr><td>PRE BAND</td><td>Frecuencia de corte del filtro <b>antes</b> de la distorsión: decide qué rango se satura (los graves se saturan menos si los filtras antes)</td><td>Neutro/centro (50% aprox.)</td></tr>
+<tr><td>COLOR</td><td>Equilibrio tonal de la distorsión. Hacia un lado, más oscuro; hacia el otro, más brillante y raspado</td><td>Entre las 9:00 y 11:00 del reloj (más oscuro: evita harshness)</td></tr>
+<tr><td>PRE AMP</td><td>Ganancia que entra a la distorsión: cuánta saturación aplicas</td><td>0.0 a 0.2 (si pasa de 0.3–0.4 distorsiona de verdad)</td></tr>
+<tr><td>X100</td><td>Multiplica por 100 la ganancia de entrada</td><td><b>SIEMPRE apagado</b></td></tr>
+<tr><td>POST FILT</td><td>Filtro <b>después</b> de la distorsión; recorta agudos añadidos</td><td>Bajar un poco si suena áspero</td></tr>
+<tr><td>POST GAIN</td><td>Volumen de salida</td><td>Ajustar para igualar volumen con bypass</td></tr>
+</table></div>
+<p>Los nombres exactos varían entre versiones de FL Studio; el concepto es igual.</p>
+<h3>Otros plugins</h3>
+<ul>
+<li><b>Fruity WaveShaper (nativo):</b> dibujas una curva que transforma la onda. Mantén la curva casi recta con ligera curvatura; <b>Mix</b> bajo (10–25%).</li>
+<li><b>Fruity Soft Clipper (nativo):</b> recorta suavemente los picos. Sirve como clipper previo al limitador para ganar 1–2 dB de volumen. <b>Threshold</b> suave, <b>Post gain</b> compensa.</li>
+<li><b>Soundgoodizer (nativo):</b> modos A, B, C, D y perilla Amount. Úsalo en A con poco Amount (10–25%); es compresor+saturación, así que no lo combines con exceso de otros.</li>
+<li><b>Gratis:</b> <b>Camel Phat Free / Saturation de Softube (Saturation Knob)</b>, <b>Kilohearts Distortion</b>, <b>Wavesfactory Saturator</b>.</li>
+</ul>
+<h3>Prueba para no arruinar nada</h3>
+<ol>
+<li>Pon en bucle el drop.</li>
+<li>Activa/desactiva el plugin <b>a igual volumen</b> (Post Gain).</li>
+<li>Correcto: medios (synths, leads, snare) más llenos y presentes, sin cambiar el equilibrio.</li>
+<li>Incorrecto: kick pierde pegada, hats chillones (harsh), sub que crepita → reduce Pre Amp.</li>
+</ol>
+<div class="box wa">Para saturar solo agudos o medios y no el sub, usa saturación <b>multibanda</b> (Maximus no satura, pero puedes usar Kilohearts Multipass o la saturación en un bus de synths).</div>
+
+<h2 id="eqt">7. EQ tonal final</h2>
+<p>Ajustes <b>suaves y amplios</b> (±0.5 a ±2 dB, Q bajo) para el equilibrio general; no es corregir problemas, es dar carácter. Se puede usar <b>Fruity Parametric EQ 2</b> o <b>Fruity EQ 2</b>.</p>
+<ul>
+<li><b>High-pass</b> a 20–25 Hz (quita energía inaudible).</li>
+<li><b>Low shelf</b> +0.5/+1 dB en 60–100 Hz si falta peso (cuidado con el headroom).</li>
+<li><b>Corte</b> -1 dB en 200–400 Hz si queda barro.</li>
+<li><b>High shelf</b> +0.5/+1 dB desde 8–10 kHz si falta aire.</li>
+<li>Compara <b>con tu referencia</b> y con un analizador (SPAN): la curva debe parecerse a la de temas profesionales del mismo género.</li>
+</ul>
+<div class="box"><b>Mid/Side EQ (M/S):</b> permite ecualizar el centro y los laterales por separado. Ejemplo: sube un poco el aire (10 kHz) solo en los Side para dar anchura, y recorta graves en los Side. Plugins gratis: <b>TDR Nova</b> o <b>MSED (Voxengo)</b>.</div>
+
+<h2 id="lim">8. Limitador final</h2>
+<p>Un <b>limitador</b> es un compresor con ratio infinito: impide que la señal pase de un nivel máximo (<b>Ceiling</b>). Aquí consigues el volumen final.</p>
+<h3>Fruity Limiter — perilla por perilla</h3>
+<div class="tw"><table>
+<tr><th>Control</th><th>Qué hace</th><th>Valor recomendado</th></tr>
+<tr><td>GAIN</td><td>Cuánto sube la señal antes del límite (más = más fuerte, más limitación)</td><td>Súbelo hasta 2–5 dB de reducción en el drop</td></tr>
+<tr><td>SAT</td><td>Saturación en el limitador</td><td>0 o muy bajo</td></tr>
+<tr><td>CEILING</td><td>Techo máximo de salida</td><td><b>-1.0 dB</b> (compensa inter-sample peaks)</td></tr>
+<tr><td>ATTACK</td><td>Tiempo para reaccionar</td><td>Bajo/medio (1–3 ms)</td></tr>
+<tr><td>RELEASE</td><td>Tiempo para recuperar</td><td>50–200 ms; probar al tempo</td></tr>
+<tr><td>KNEE / ratio</td><td>Suavidad de la acción</td><td>Medio</td></tr>
+<tr><td>LIM</td><td>Activa la sección de limitador</td><td>Encendido</td></tr>
+</table></div>
+<p>Mira el indicador de reducción: en EDM suele ser 2–5 dB; si pasa de 6–8 dB constantes, hay que bajar Gain y buscar el volumen en otra parte (mejor mezcla, clipper, más headroom).</p>
+<h3>Otros plugins</h3>
+<ul>
+<li><b>Fruity Soft Clipper (nativo)</b> antes del limitador para recortar picos del kick.</li>
+<li><b>Maximus (nativo)</b> limitador multibanda: para controlar graves por separado.</li>
+<li><b>Gratis:</b> <b>LoudMax</b> (muy sencillo: Threshold y Output), <b>TDR Limiter 6 GE</b>, <b>Youlean Loudness Meter</b> para medir.</li>
+</ul>
+<h3>Proceso</h3>
+<ol>
+<li>Pon Ceiling a -1 dB.</li>
+<li>Sube Gain en el drop hasta el volumen deseado (mira LUFS-S).</li>
+<li>Escucha: si el kick pierde punch o se oye pumping, baja el Gain.</li>
+<li>Compara con la referencia <b>igualando volumen</b> (tu tema a LUFS similares con el Gain; ten cuidado de no engañarte: más fuerte siempre parece mejor).</li>
+<li>Mide en Youlean la canción completa.</li>
+</ol>
+
+<h2 id="check">9. Comprobación final</h2>
+<ul>
+<li>☐ <b>LUFS-I</b> en rango del género (ver tabla) y <b>True Peak ≤ -1 dBTP</b>.</li>
+<li>☐ <b>Mono check:</b> en mono no desaparece ningún elemento importante.</li>
+<li>☐ <b>Referencia:</b> comparado con 2–3 temas profesionales a igual volumen.</li>
+<li>☐ <b>Otros sistemas:</b> auriculares, altavoces del móvil, coche, monitores. Si es posible, escucha en un sistema de club.</li>
+<li>☐ <b>Bajo volumen:</b> siguen oyéndose kick, bajo y lead.</li>
+<li>☐ <b>Sin clipping ni distorsión</b> en todo el tema, incluido el final y los fades.</li>
+<li>☐ <b>Exportación:</b> WAV 24 bits, Dither OFF (si exportas 24 bit), sin recortes al inicio y final.</li>
+<li>☐ <b>Después de convertir a MP3 320 kbps o AAC</b> comprueba que no hay clipping nuevo.</li>
+</ul>
+
+<h2 id="generos">10. Guía por género</h2>
+<p>Valores orientativos de <b>mastering para streaming/club</b>. Siempre prioriza lo que te dice tu referencia del género.</p>
+<div class="tw"><table>
+<tr><th>Género</th><th>LUFS-I</th><th>True Peak</th><th>Graves</th><th>Claves</th></tr>
+<tr><td>EDM mainstream (Avicii, Martin Garrix)</td><td>-9 a -7</td><td>-1 dBTP</td><td>Sub mono bajo 100 Hz, kick con click a 3–5 kHz</td><td>Drop con mucho punch; pianos y leads brillantes; glue suave; sidechain fuerte en pads/bajo</td></tr>
+<tr><td>Trap EDM / drops estilo Martin Garrix “In the Name of Love”</td><td>-9 a -7</td><td>-1 dBTP</td><td>808 mono, controlar sub a 40–60 Hz</td><td>808 + kick: separa por frecuencia y sidechain; hats con control de harsh en 7–9 kHz</td></tr>
+<tr><td>House</td><td>-10 a -8</td><td>-1 dBTP</td><td>Bajo y kick centrados</td><td>Groove y claridad; menos limitación; bajo redondo</td></tr>
+<tr><td>Afro House</td><td>-11 a -9</td><td>-1 dBTP</td><td>Bajo cálido, percusiones amplias</td><td>Percusiones orgánicas (shakers, congas) en estéreo; cuida el cuerpo 150–400 Hz; saturación suave</td></tr>
+<tr><td>Progressive House</td><td>-10 a -8</td><td>-1 dBTP</td><td>Sub limpio</td><td>Pads anchos, reverbs largas; cuida el barro 200–400 Hz; dinámica entre secciones</td></tr>
+<tr><td>Drum &amp; Bass</td><td>-8 a -6</td><td>-0.5 / -1 dBTP</td><td>Sub mono, reese controlado</td><td>Snare brillante y fuerte; limitar el sub con cuidado; bajos con mucha energía en 40–80 Hz</td></tr>
+<tr><td>Trap melódico</td><td>-9 a -7</td><td>-1 dBTP</td><td>808 centrado</td><td>Voz o leads claros, hats controlados, sin harsh; melodías con aire</td></tr>
+<tr><td>Techno / underground</td><td>-10 a -7</td><td>-1 dBTP</td><td>Kick potente y mono</td><td>Menos brillo, más saturación y dinámica sutil; control de resonancias</td></tr>
+</table></div>
+<div class="box">Estos valores son <b>referencias</b>, no reglas. Dos temas con el mismo LUFS pueden sonar muy distintos. <b>Más fuerte no es mejor</b>: si pierdes punch, vuelve atrás.</div>
+
+<h2 id="manual">11. Manual de plugins: qué es cada control</h2>
+<p>Aquí cada plugin se explica por separado, control por control. Los nombres exactos y la disposición pueden variar un poco según tu versión de FL Studio; si algo no coincide, busca el control con la misma función.</p>
+<div class="box"><b>Unidades básicas:</b> <b>dB</b> (decibelio) mide nivel; <b>Hz</b> (hercio) mide frecuencia, es decir, lo grave o agudo; <b>ms</b> (milisegundo) = milésima de segundo, mide tiempo; <b>%</b> indica la proporción de efecto aplicado.</div>
+
+<h3>Fruity Parametric EQ 2 (nativo) — ecualizador</h3>
+<p>Un <b>ecualizador</b> sube o baja el volumen de zonas concretas del espectro. “Paramétrico” significa que eliges tú la frecuencia, la ganancia y el ancho.</p>
+<div class="tw"><table>
+<tr><th>Control</th><th>Qué es</th><th>Para qué sirve / valores</th></tr>
+<tr><td>Bandas (1–7)</td><td>Siete filtros independientes, cada uno con sus propios ajustes</td><td>Usa una banda por problema; no hace falta usar todas</td></tr>
+<tr><td>Freq (frecuencia)</td><td>Frecuencia central en Hz donde actúa la banda</td><td>Define dónde actúas (ej. 250 Hz para barro)</td></tr>
+<tr><td>Gain (ganancia)</td><td>Cuántos dB subes (+) o bajas (-) en esa frecuencia</td><td>En mastering: ±0.5 a ±3 dB. Para buscar problemas: +6/+8 temporal</td></tr>
+<tr><td>BW / Q (ancho de banda)</td><td>Anchura de la zona afectada. Q alto = estrecho y quirúrgico; Q bajo = ancho y suave</td><td>Cortes de resonancia: Q alto. Equilibrio tonal: Q bajo</td></tr>
+<tr><td>Tipo de banda</td><td>Forma del filtro: Peaking/bell (campana), Low shelf, High shelf, High-pass, Low-pass</td><td>Ver tipos en §4</td></tr>
+<tr><td>Band Solo</td><td>Deja oír solo la zona que procesa esa banda</td><td>Ayuda a identificar qué suena en esa frecuencia</td></tr>
+<tr><td>Analizador espectral</td><td>Gráfica en tiempo real de la energía por frecuencia</td><td>Referencia visual; manda siempre el oído</td></tr>
+<tr><td>Level (salida)</td><td>Ganancia general de salida</td><td>Compensa el volumen para comparar con bypass</td></tr>
+</table></div>
+
+<h3>Fruity Compressor (nativo) — compresor</h3>
+<p>Reduce el volumen de lo que supera un nivel, achicando la diferencia entre fuerte y suave.</p>
+<div class="tw"><table>
+<tr><th>Control</th><th>Qué es</th><th>Valor orientativo</th></tr>
+<tr><td>Threshold (umbral)</td><td>Nivel en dB a partir del cual el compresor empieza a actuar. Más bajo = comprime más</td><td>Bájalo hasta ver 1–2 dB de reducción</td></tr>
+<tr><td>Ratio (proporción)</td><td>Cuánto reduce lo que pasa del umbral. 2:1: por cada 2 dB por encima, salen 1 dB. ∞:1 = limitador</td><td>1.5:1 a 2:1 en glue</td></tr>
+<tr><td>Gain (makeup)</td><td>Subida de volumen tras comprimir, para compensar lo que se bajó</td><td>Iguala el volumen con y sin plugin</td></tr>
+<tr><td>Attack (ataque)</td><td>Milisegundos que tarda en empezar a comprimir tras superar el umbral. Lento deja pasar el transitorio (golpe)</td><td>20–40 ms (nunca menos de 5 ms en el Master)</td></tr>
+<tr><td>Release (relajación)</td><td>Milisegundos que tarda en dejar de comprimir. Corto = más movimiento y posible pumping; largo = más estable</td><td>50–150 ms</td></tr>
+<tr><td>Type</td><td>Carácter de la respuesta del compresor (más duro o más suave)</td><td>El más suave para glue</td></tr>
+</table></div>
+<p><b>Medidor de Gain Reduction:</b> muestra cuántos dB está bajando en cada instante. Objetivo: 1–2 dB.</p>
+
+<h3>Fruity Limiter (nativo) — compresor + limitador + puerta de ruido</h3>
+<p>Plugin de varias secciones. Se puede usar como compresor, como limitador, o como ambos.</p>
+<div class="tw"><table>
+<tr><th>Control</th><th>Qué es</th><th>Valor orientativo</th></tr>
+<tr><td>GAIN</td><td>Sube la señal antes de la limitación. Más gain = más volumen y más limitación</td><td>Hasta 2–5 dB de reducción en el drop</td></tr>
+<tr><td>SAT</td><td>Saturación (distorsión suave) aplicada a la señal</td><td>0 o muy poco</td></tr>
+<tr><td>CEIL (ceiling)</td><td>Techo máximo de salida. Nada pasa de ese nivel</td><td>-1 dB (deja margen al True Peak)</td></tr>
+<tr><td>COMP THRES</td><td>Umbral de la sección compresor (igual que en cualquier compresor)</td><td>Hasta ver 1–2 dB de reducción</td></tr>
+<tr><td>RATIO</td><td>Proporción de compresión</td><td>2:1</td></tr>
+<tr><td>KNEE</td><td>Suavidad de la transición al comprimir: “hard” (brusca) o “soft” (progresiva)</td><td>Valor medio o suave</td></tr>
+<tr><td>ATT (attack)</td><td>Velocidad de reacción</td><td>Compresor: 20–30 ms. Limitador: 1–3 ms</td></tr>
+<tr><td>REL (release)</td><td>Velocidad de recuperación</td><td>100 ms (50–200)</td></tr>
+<tr><td>SUST (sustain)</td><td>Cuánto se prolonga la compresión sobre la cola del sonido</td><td>Dejar en neutro si no lo necesitas</td></tr>
+<tr><td>Noise gate</td><td>Silencia lo que esté por debajo de un nivel (ruido de fondo)</td><td>Normalmente apagado en mastering</td></tr>
+<tr><td>Sidechain</td><td>Controla el efecto con la señal de otra pista (ej. el kick)</td><td>Útil para bombeo en bajos y pads</td></tr>
+<tr><td>Botones COMP / LIM</td><td>Activan o desactivan la sección de compresor o de limitador</td><td>Elige qué sección usar</td></tr>
+</table></div>
+
+<h3>Maximus (nativo) — compresor/limitador multibanda</h3>
+<p><b>Multibanda</b> significa que divide el sonido en tres rangos (graves, medios, agudos) y procesa cada uno por separado. Es potente, pero fácil de usar mal.</p>
+<div class="tw"><table>
+<tr><th>Control</th><th>Qué es</th><th>Valor orientativo</th></tr>
+<tr><td>Low / Mid / High</td><td>Las tres bandas de frecuencia</td><td>Procesa solo la que lo necesite</td></tr>
+<tr><td>Crossover (frecuencias de corte)</td><td>Dónde se separa cada banda</td><td>Graves/medios ~150–250 Hz; medios/agudos ~3–5 kHz</td></tr>
+<tr><td>Threshold, Ratio, Attack, Release, Knee</td><td>Mismos conceptos que un compresor, pero aplicados a esa banda</td><td>Ratio 1.5–2:1; GR 1–2 dB</td></tr>
+<tr><td>Gain (de banda)</td><td>Sube o baja el volumen de esa banda</td><td>Ajustes de ±1 dB</td></tr>
+<tr><td>Solo</td><td>Escuchar solo una banda</td><td>Para localizar qué ocurre en esa zona</td></tr>
+<tr><td>Master limiter</td><td>Limitador final del plugin (ceiling y ganancia)</td><td>Ceiling -1 dB</td></tr>
+</table></div>
+
+<h3>Fruity Blood Overdrive (nativo) — saturación</h3>
+<p><b>Saturar</b> es distorsionar suavemente para añadir <b>armónicos</b> (frecuencias nuevas, múltiplos de la original). Da densidad y percepción de volumen.</p>
+<div class="tw"><table>
+<tr><th>Perilla</th><th>Qué es</th><th>Valor orientativo</th></tr>
+<tr><td>PRE BAND</td><td>Filtro antes de la distorsión: decide qué rango de frecuencias entra a saturarse</td><td>Neutro/centro</td></tr>
+<tr><td>COLOR</td><td>Color tonal de la distorsión; hacia un lado más oscura, hacia el otro más brillante</td><td>Entre las 9:00 y las 11:00 (más oscura)</td></tr>
+<tr><td>PRE AMP</td><td>Cuánta señal entra a la distorsión: es la cantidad de saturación</td><td>0.0–0.2 (por encima de 0.3 distorsiona)</td></tr>
+<tr><td>X100</td><td>Interruptor que multiplica la ganancia por 100</td><td>Siempre apagado</td></tr>
+<tr><td>POST FILT</td><td>Filtro después de la distorsión; recorta agudos añadidos</td><td>Baja si suena áspero</td></tr>
+<tr><td>POST GAIN</td><td>Volumen de salida</td><td>Iguala el volumen con y sin plugin</td></tr>
+</table></div>
+
+<h3>Fruity Soft Clipper (nativo) — recorte suave</h3>
+<p><b>Clipper:</b> recorta los picos en lugar de comprimirlos. “Soft” redondea el recorte para que suene menos agresivo.</p>
+<div class="tw"><table>
+<tr><th>Control</th><th>Qué es</th><th>Valor orientativo</th></tr>
+<tr><td>Threshold</td><td>Nivel a partir del que empieza a recortar los picos</td><td>Bájalo hasta recortar 1–2 dB solo en los picos del kick</td></tr>
+<tr><td>Post gain</td><td>Volumen de salida</td><td>Compensa lo recortado</td></tr>
+</table></div>
+<p>Úsalo antes del limitador: quita los picos puntuales y el limitador trabaja menos.</p>
+
+<h3>Fruity WaveShaper (nativo) — saturación por curva</h3>
+<ul>
+<li><b>Gráfica de transferencia:</b> eje horizontal = señal que entra; vertical = señal que sale. Una recta diagonal no cambia nada; curvarla añade distorsión.</li>
+<li><b>Pre / Post gain:</b> volumen antes y después de la curva.</li>
+<li><b>Mix:</b> mezcla señal original y procesada. En mastering: 10–25%.</li>
+</ul>
+
+<h3>Soundgoodizer (nativo) — compresor + saturación rápido</h3>
+<ul>
+<li><b>A, B, C, D:</b> cuatro modos con distinto carácter (A el más suave, D el más agresivo).</li>
+<li><b>Amount:</b> cantidad de efecto. En mastering: 10–25%.</li>
+</ul>
+
+<h3>Fruity Stereo Shaper (nativo) — estéreo</h3>
+<ul>
+<li><b>Separación estéreo (L/R):</b> aumenta o reduce la diferencia entre izquierdo y derecho. Más = más ancho.</li>
+<li><b>Phase offset (desfase):</b> retrasa un canal respecto al otro creando sensación de anchura, pero puede causar cancelaciones en mono. Úsalo muy poco.</li>
+</ul>
+
+<h3>Fruity dB Meter / Wave Candy (nativos) — medidores</h3>
+<ul>
+<li><b>Fruity dB Meter:</b> muestra el nivel en dB en tiempo real.</li>
+<li><b>Wave Candy:</b> visualizador con varios modos: forma de onda, espectro, vectorscopio.</li>
+</ul>
+
+<h3>Youlean Loudness Meter 2 (gratis) — medidor de volumen</h3>
+<div class="tw"><table>
+<tr><th>Elemento</th><th>Qué muestra</th></tr>
+<tr><td>Integrated (LUFS-I)</td><td>Volumen medio de toda la canción</td></tr>
+<tr><td>Short-term / Momentary</td><td>Volumen de ventanas de 3 s / 400 ms</td></tr>
+<tr><td>True Peak</td><td>Pico máximo real en dBTP</td></tr>
+<tr><td>LRA</td><td>Diferencia de volumen entre partes suaves y fuertes (LU)</td></tr>
+<tr><td>PLR</td><td>Diferencia entre pico y LUFS-I; mide cuánta dinámica queda</td></tr>
+<tr><td>Histograma / historial</td><td>Gráfica de cómo evoluciona el volumen</td></tr>
+<tr><td>Reset</td><td>Reinicia la medición; hazlo antes de reproducir la canción entera</td></tr>
+</table></div>
+
+<h3>iZotope Ozone Imager 2 (gratis) — imagen estéreo</h3>
+<ul>
+<li><b>Width (anchura):</b> 0% = sin cambio; negativo = más mono; positivo = más ancho.</li>
+<li><b>Bandas y crossover:</b> separa en rangos para controlar la anchura de cada uno (graves en mono).</li>
+<li><b>Stereoize:</b> crea anchura artificial. Úsalo con cuidado.</li>
+<li><b>Vectorscopio:</b> dibujo de la imagen estéreo.</li>
+<li><b>Correlation (correlación):</b> de -1 a +1. Cerca de +1 = señal sólida en mono; cerca de -1 = riesgo de cancelación.</li>
+</ul>
+
+<h3>LoudMax (gratis) — limitador sencillo</h3>
+<ul>
+<li><b>Thresh (umbral):</b> más bajo = más limitación (más fuerte).</li>
+<li><b>Output:</b> techo de salida (-1.0 dB).</li>
+<li><b>ISP (inter-sample peaks):</b> detecta picos entre muestras. Mejor activado.</li>
+<li><b>Att / Rel:</b> ataque y relajación (valores bajos suenan más transparentes).</li>
+</ul>
+
+<h3>TDR Kotelnikov (gratis) — compresor de mastering</h3>
+<ul>
+<li><b>Threshold, Ratio, Attack, Release, Soft Knee:</b> mismos conceptos que en cualquier compresor.</li>
+<li><b>Peak/RMS:</b> detecta por picos o por volumen medio. RMS es más suave para glue.</li>
+<li><b>Mix:</b> mezcla señal original y comprimida (compresión paralela).</li>
+<li><b>Stereo mode:</b> procesa L/R o Mid/Side.</li>
+</ul>
+
+<h3>TDR Nova (gratis) — EQ dinámica</h3>
+<ul>
+<li><b>Threshold por banda:</b> la banda solo actúa cuando esa frecuencia supera ese nivel.</li>
+<li><b>Ratio, Attack, Release:</b> como en un compresor, pero aplicados solo a esa banda.</li>
+<li><b>Modo Compress/Expand:</b> reduce o amplifica según el nivel.</li>
+</ul>
+
+<h2 id="plugins">12. Resumen de plugins por etapa</h2>
+<div class="tw"><table>
+<tr><th>Etapa</th><th>Nativos FL Studio</th><th>Gratis externos</th></tr>
+<tr><td>Gain</td><td>Fruity Balance, Fruity dB Meter</td><td>Youlean Loudness Meter 2</td></tr>
+<tr><td>Medición</td><td>Wave Candy, Fruity dB Meter</td><td>Youlean, SPAN</td></tr>
+<tr><td>Estéreo/mono</td><td>Fruity Stereo Shaper</td><td>Ozone Imager 2, GMonoBass</td></tr>
+<tr><td>EQ</td><td>Fruity Parametric EQ 2, Fruity EQ 2</td><td>TDR Nova, MSED, Pro-Q (de pago)</td></tr>
+<tr><td>Compresión</td><td>Fruity Limiter, Fruity Compressor, Maximus</td><td>TDR Kotelnikov</td></tr>
+<tr><td>Saturación</td><td>Fruity Blood Overdrive, Fruity WaveShaper, Soft Clipper, Soundgoodizer</td><td>Kilohearts Distortion</td></tr>
+<tr><td>Limitador</td><td>Fruity Limiter, Maximus</td><td>LoudMax, TDR Limiter 6 GE</td></tr>
+<tr><td>Sidechain</td><td>Fruity Peak Controller, Fruity Limiter (sidechain)</td><td>Kickstart 2 (de pago), LFOTool (de pago)</td></tr>
+</table></div>
+
+<h2 id="glosario">13. Glosario</h2>
+<div class="tw"><table>
+<tr><th>Término</th><th>Significado</th></tr>
+<tr><td>dBFS</td><td>Decibelios relativos al máximo digital (0 dBFS).</td></tr>
+<tr><td>Headroom</td><td>Margen entre el pico y 0 dBFS.</td></tr>
+<tr><td>Clipping</td><td>Recorte de la señal al superar 0 dBFS; distorsión.</td></tr>
+<tr><td>Premaster</td><td>Mezcla final lista para el mastering.</td></tr>
+<tr><td>Ceiling</td><td>Techo máximo de salida del limitador.</td></tr>
+<tr><td>Threshold</td><td>Umbral de actuación de compresor/limitador.</td></tr>
+<tr><td>Ratio</td><td>Proporción de compresión.</td></tr>
+<tr><td>Q / BW</td><td>Ancho de banda de una banda de EQ.</td></tr>
+<tr><td>Bypass</td><td>Apagar un efecto para comparar.</td></tr>
+<tr><td>Mid / Side</td><td>Centro / laterales de una señal estéreo.</td></tr>
+<tr><td>Armónicos</td><td>Frecuencias múltiplos de una fundamental; dan timbre.</td></tr>
+<tr><td>Fundamental</td><td>Frecuencia principal de una nota.</td></tr>
+<tr><td>Sidechain</td><td>Usar la señal de un sonido (kick) para controlar el efecto en otro (bajo).</td></tr>
+<tr><td>Dither</td><td>Ruido muy bajo añadido al reducir bits (24→16) para evitar distorsión de cuantización.</td></tr>
+<tr><td>Punch</td><td>Pegada de los golpes (kick, snare).</td></tr>
+<tr><td>Mud / barro</td><td>Acumulación de graves-medios (150–500 Hz).</td></tr>
+<tr><td>Harshness</td><td>Aspereza que fatiga el oído.</td></tr>
+</table></div>
+
+<h2 id="errores">14. Errores típicos que evitar</h2>
+<ul>
+<li>Masterizar con la mezcla pegada a 0 dB.</li>
+<li>Comparar “con efecto” y “sin efecto” <b>a distinto volumen</b>: lo más fuerte siempre parece mejor.</li>
+<li>Usar compresión + saturación + limitador en exceso: sonido plano y fatigante.</li>
+<li>Subir agudos para “dar brillo” en vez de arreglar el mix.</li>
+<li>Poner todo en mono o todo ancho.</li>
+<li>No comprobar en otros sistemas.</li>
+</ul>
+<div class="box wa"><b>Nota:</b> el mastering no arregla una mezcla mala. Si no consigues el sonido, vuelve a la mezcla.</div>
+</main>
+</body>
+</html>
